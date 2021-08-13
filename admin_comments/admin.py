@@ -2,13 +2,16 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from admin_comments.models import Comment
 from admin_comments.helpers import get_class_from_str
 from django.conf import settings
-
+from datetime import datetime, timedelta
+from django.contrib import messages
 
 class CommentInline(GenericTabularInline):
 
     model = Comment
 
     readonly_fields = ('user',)
+
+    exclude = ["email_sent"]
 
     def __init__(self, *args, **kwargs):
         form_klass = getattr(
@@ -23,11 +26,6 @@ class CommentInline(GenericTabularInline):
 
         SHOW_EMPTY = getattr(settings, 'ADMIN_COMMENTS_SHOW_EMPTY', False)
 
-        COLLAPSIBLE_COMMENTS = getattr(settings, 'ADMIN_COMMENTS_COLLAPSIBLE_COMMENTS', True)
-
-        if COLLAPSIBLE_COMMENTS:
-            self.classes = ['collapse']
-
         CommentForm = get_class_from_str(form_klass)
         CommentFormSet = get_class_from_str(formset_klass)
 
@@ -37,7 +35,7 @@ class CommentInline(GenericTabularInline):
         super(CommentInline, self).__init__(*args, **kwargs)
 
     def get_queryset(self, request):
-        return super(CommentInline, self).get_queryset(request).order_by('-time')
+        return super(CommentInline, self).get_queryset(request).order_by('time')
 
     def has_delete_permission(self, request, obj=None):
         return False

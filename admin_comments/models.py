@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-
+from datetime import datetime, timedelta
 
 class Comment(models.Model):
 
@@ -37,7 +37,10 @@ class Comment(models.Model):
         blank=False
     )
 
+    email_sent = models.BooleanField(default=False)
+
     def __str__(self):
+        self.time = self.time + timedelta(hours=2)
         return self.time.strftime("%b. %d, %Y, %-I:%M %p")
 
 
